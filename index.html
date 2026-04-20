@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalentAI – Intelligent Recruitment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">Talent<span>AI</span></div>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/apply">Apply Now</a>
+    <a href="/admin">Admin</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🤖 Powered by Logistic Regression ML</div>
+    <h1>Hire Smarter.<br><span class="accent">Not Harder.</span></h1>
+    <p class="hero-sub">An AI-driven recruitment platform that scores, ranks, and shortlists candidates automatically — using machine learning trained on real hiring patterns.</p>
+    <div class="hero-cta">
+      <a href="/apply" class="btn-primary">Browse & Apply</a>
+      <a href="/admin" class="btn-outline">Recruiter Dashboard →</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="score-card floating">
+      <div class="sc-label">ML Score</div>
+      <div class="sc-score">87<span>%</span></div>
+      <div class="sc-bar"><div class="sc-fill" style="width:87%"></div></div>
+      <div class="sc-status shortlisted">✓ Shortlisted</div>
+    </div>
+    <div class="score-card floating2">
+      <div class="sc-label">ML Score</div>
+      <div class="sc-score">42<span>%</span></div>
+      <div class="sc-bar"><div class="sc-fill low" style="width:42%"></div></div>
+      <div class="sc-status rejected">✗ Rejected</div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <h2>How It Works</h2>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">📋</div>
+      <h3>Post a Job</h3>
+      <p>Define the role, required skills, and minimum experience. The system learns your preferences.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📄</div>
+      <h3>Candidates Apply</h3>
+      <p>Applicants upload resumes. Our NLP engine extracts skills, experience, and education automatically.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🧠</div>
+      <h3>ML Scoring</h3>
+      <p>Logistic Regression model scores each resume 0–100 based on 8 engineered features.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">✅</div>
+      <h3>Auto Shortlist</h3>
+      <p>Candidates above the threshold are shortlisted instantly. Review and retrain the model with your decisions.</p>
+    </div>
+  </div>
+</section>
+
+<section class="stats-section">
+  <div class="stat-item">
+    <div class="stat-num" id="stat-jobs">0</div>
+    <div class="stat-label">Active Jobs</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" id="stat-apps">0</div>
+    <div class="stat-label">Applications</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" id="stat-shortlisted">0</div>
+    <div class="stat-label">Shortlisted</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" id="stat-score">0</div>
+    <div class="stat-label">Avg ML Score</div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div>TalentAI &copy; 2025 · Built with Flask + Logistic Regression</div>
+</footer>
+
+<script>
+fetch('/api/stats').then(r=>r.json()).then(d=>{
+  document.getElementById('stat-jobs').textContent = d.total_jobs;
+  document.getElementById('stat-apps').textContent = d.total_applicants;
+  document.getElementById('stat-shortlisted').textContent = d.shortlisted;
+  document.getElementById('stat-score').textContent = d.avg_score + '%';
+});
+</script>
+</body>
+</html>

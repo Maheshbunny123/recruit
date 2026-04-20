@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard – TalentAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body class="admin-body">
+
+<nav class="navbar">
+  <div class="nav-brand"><a href="/">Talent<span>AI</span></a></div>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/apply">Apply</a>
+    <a href="/admin" class="active">Admin</a>
+  </div>
+</nav>
+
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Dashboard</div>
+    <nav class="sidebar-nav">
+      <button class="snav-btn active" onclick="showTab('overview')">📊 Overview</button>
+      <button class="snav-btn" onclick="showTab('jobs')">💼 Manage Jobs</button>
+      <button class="snav-btn" onclick="showTab('applicants')">👥 Applicants</button>
+      <button class="snav-btn" onclick="showTab('model')">🧠 ML Model</button>
+    </nav>
+    <div class="model-status-box" id="model-status-box">
+      <div class="msb-dot"></div>
+      <div class="msb-text">Loading model…</div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="admin-main">
+
+    <!-- Overview Tab -->
+    <div id="tab-overview" class="tab-content active">
+      <h2 class="tab-title">Overview</h2>
+      <div class="stats-cards">
+        <div class="stat-card blue">
+          <div class="sc-icon">💼</div>
+          <div class="sc-val" id="ov-jobs">—</div>
+          <div class="sc-lbl">Active Jobs</div>
+        </div>
+        <div class="stat-card green">
+          <div class="sc-icon">📄</div>
+          <div class="sc-val" id="ov-apps">—</div>
+          <div class="sc-lbl">Total Applications</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="sc-icon">✅</div>
+          <div class="sc-val" id="ov-short">—</div>
+          <div class="sc-lbl">Shortlisted</div>
+        </div>
+        <div class="stat-card red">
+          <div class="sc-icon">✗</div>
+          <div class="sc-val" id="ov-rej">—</div>
+          <div class="sc-lbl">Rejected</div>
+        </div>
+      </div>
+      <div class="avg-score-bar">
+        <span>Average ML Score</span>
+        <div class="asb-track"><div class="asb-fill" id="asb-fill"></div></div>
+        <span id="asb-val">0%</span>
+      </div>
+    </div>
+
+    <!-- Jobs Tab -->
+    <div id="tab-jobs" class="tab-content hidden">
+      <div class="tab-header">
+        <h2 class="tab-title">Manage Jobs</h2>
+        <button class="btn-primary" onclick="toggleJobForm()">+ Post New Job</button>
+      </div>
+
+      <div id="job-form-wrap" class="hidden">
+        <div class="form-card">
+          <h3>Post a New Position</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Job Title *</label>
+              <input type="text" id="jf-title" placeholder="e.g. Senior Python Developer">
+            </div>
+            <div class="form-group">
+              <label>Department</label>
+              <input type="text" id="jf-dept" placeholder="e.g. Engineering">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Location</label>
+              <input type="text" id="jf-loc" placeholder="e.g. Remote / Bangalore">
+            </div>
+            <div class="form-group">
+              <label>Min. Experience (years)</label>
+              <input type="number" id="jf-exp" value="0" min="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Required Skills (comma-separated) *</label>
+            <input type="text" id="jf-keywords" placeholder="python, flask, sql, docker, machine learning">
+          </div>
+          <div class="form-group">
+            <label>Shortlist Threshold (%)</label>
+            <input type="range" id="jf-score" min="10" max="95" value="60" oninput="document.getElementById('jf-score-val').textContent=this.value+'%'">
+            <span id="jf-score-val">60%</span>
+          </div>
+          <div class="form-group">
+            <label>Job Description</label>
+            <textarea id="jf-desc" rows="4" placeholder="Describe the role, responsibilities, and requirements…"></textarea>
+          </div>
+          <div class="form-row">
+            <button class="btn-primary" onclick="postJob()">Post Job</button>
+            <button class="btn-outline" onclick="toggleJobForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="jobs-admin-list"></div>
+    </div>
+
+    <!-- Applicants Tab -->
+    <div id="tab-applicants" class="tab-content hidden">
+      <div class="tab-header">
+        <h2 class="tab-title">Applicants</h2>
+        <div class="filter-row">
+          <select id="filter-job" onchange="loadApplicants()">
+            <option value="">All Jobs</option>
+          </select>
+          <select id="filter-status" onchange="loadApplicants()">
+            <option value="">All Status</option>
+            <option value="shortlisted">Shortlisted</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div id="applicants-table-wrap"></div>
+    </div>
+
+    <!-- ML Model Tab -->
+    <div id="tab-model" class="tab-content hidden">
+      <h2 class="tab-title">ML Model Info</h2>
+      <div class="model-info-card">
+        <h3>🧠 Logistic Regression Classifier</h3>
+        <p>This system uses a <strong>pure NumPy Logistic Regression</strong> trained on 8 hand-engineered resume features. The model learns from your manual shortlist/reject decisions and automatically rescores all pending applicants.</p>
+
+        <div class="feature-table">
+          <div class="ft-header">
+            <span>Feature</span><span>Description</span><span>Weight</span>
+          </div>
+          <div class="ft-row"><span>Keyword Match</span><span>% of job keywords found in resume</span><span>30%</span></div>
+          <div class="ft-row"><span>Tech Skills</span><span>Count of 50+ tech skills detected</span><span>20%</span></div>
+          <div class="ft-row"><span>Experience</span><span>Years of experience (extracted via regex)</span><span>15%</span></div>
+          <div class="ft-row"><span>Education Level</span><span>PhD=4, Masters=3, Bachelors=2, etc.</span><span>10%</span></div>
+          <div class="ft-row"><span>Soft Skills</span><span>Leadership, communication, etc.</span><span>10%</span></div>
+          <div class="ft-row"><span>Achievements</span><span>Quantified results (%, $, numbers)</span><span>5%</span></div>
+          <div class="ft-row"><span>Section Completeness</span><span>Has education/skills/projects sections</span><span>5%</span></div>
+          <div class="ft-row"><span>Resume Length</span><span>Word count (normalized to 800 words)</span><span>5%</span></div>
+        </div>
+
+        <div class="model-train-note" id="model-train-note">
+          <strong>🔁 Active Learning:</strong> Review at least 10 applications manually (shortlist / reject) to trigger Logistic Regression training. Until then, the weighted heuristic is used.
+        </div>
+
+        <div class="sigmoid-viz">
+          <div class="sv-title">Sigmoid Activation Function</div>
+          <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" width="100%" height="auto">
+            <defs>
+              <linearGradient id="sigGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#ef4444"/>
+                <stop offset="50%" stop-color="#f59e0b"/>
+                <stop offset="100%" stop-color="#22c55e"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="60" x2="300" y2="60" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+            <line x1="150" y1="0" x2="150" y2="120" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+            <path d="M0,105 C30,104 60,100 90,88 C110,80 130,68 150,60 C170,52 190,40 210,32 C240,20 270,16 300,15"
+              fill="none" stroke="url(#sigGrad)" stroke-width="3" stroke-linecap="round"/>
+            <text x="5" y="18" fill="#888" font-size="9" font-family="DM Sans">σ(z) = 1/(1+e⁻ᶻ)</text>
+            <text x="5" y="108" fill="#ef4444" font-size="8">Reject</text>
+            <text x="255" y="20" fill="#22c55e" font-size="8">Shortlist</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="/static/js/admin.js"></script>
+</body>
+</html>
